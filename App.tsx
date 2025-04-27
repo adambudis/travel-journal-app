@@ -4,16 +4,17 @@ import HomeScreen from "./src/screens/HomeScreen";
 import AboutScreen from "./src/screens/AboutScreen";
 import { RootTabParamList } from "./src/types/types";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import TripCreate from "./src/screens/TripCreate";
+import CreateTrip from "./src/screens/Trip/CreateTrip";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   MD3LightTheme as DefaultTheme,
+  IconButton,
   PaperProvider,
 } from "react-native-paper";
 import { SQLiteProvider } from "expo-sqlite";
 import initDatabase from "./src/database/database";
-import TripView from "./src/screens/TripView";
+import ViewTrip from "./src/screens/Trip/ViewTrip";
 import CreateDestination from "./src/screens/Destination/CreateDestination";
 import MapPicker from "./src/screens/MapPicker";
 import EditDestination from "./src/screens/Destination/EditDestination";
@@ -31,9 +32,21 @@ function HomeStackNavigator() {
         options={{ title: "My Trips" }}
       />
       <HomeStack.Screen
-        name="TripView"
-        component={TripView}
-        options={{ title: "Trip Details" }}
+        name="ViewTrip"
+        component={ViewTrip}
+        options={({ navigation, route }) => ({
+          title: "Trip Details",
+          headerRight: () => (
+            <IconButton
+              icon="plus"
+              onPress={() =>
+                navigation.navigate("CreateDestination", {
+                  id: (route.params as { id: number }).id,
+                })
+              }
+            />
+          ),
+        })}
       />
       <HomeStack.Screen
         name="CreateDestination"
@@ -105,7 +118,7 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Tab.Screen name="About" component={AboutScreen} />
-              <Tab.Screen name="Create" component={TripCreate} />
+              <Tab.Screen name="Create" component={CreateTrip} />
             </Tab.Navigator>
           </NavigationContainer>
         </PaperProvider>

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { TextInput, Button, Card, Divider, Text } from "react-native-paper";
-import DatePicker from "../components/DatePicker";
+import DatePicker from "../../components/DatePicker";
 import * as ImagePicker from "expo-image-picker";
 import { useSQLiteContext } from "expo-sqlite";
 
-const TripCreate = ({ navigation }) => {
+const CreateTrip = ({ navigation }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
@@ -188,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TripCreate;
+export default CreateTrip;

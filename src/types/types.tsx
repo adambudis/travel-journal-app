@@ -47,3 +47,21 @@ declare global {
     interface RootParamList extends RootTabParamList {}
   }
 }
+
+export type Destination = {
+  id: number;
+  name: string;
+  description: string;
+  date: Date;
+  latitude: number;
+  longitude: number;
+  imageUri: string | null;
+};
+
+export type Trip = {
+  id: number;
+  name: string;
+  description: string;
+  date: Date;
+  imageUri: string | null;
+};
