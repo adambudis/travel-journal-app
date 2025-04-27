@@ -124,6 +124,18 @@ const TripView = ({ route, navigation }) => {
           <Card.Actions>
             <Button
               mode="text"
+              icon="map-marker"
+              onPress={() =>
+                navigation.navigate("MapView", {
+                  latitude: dest.latitude,
+                  longitude: dest.longitude,
+                })
+              }
+            >
+              View on Map
+            </Button>
+            <Button
+              mode="text"
               icon="pencil"
               onPress={() =>
                 navigation.navigate("EditDestination", {

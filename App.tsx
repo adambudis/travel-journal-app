@@ -14,8 +14,10 @@ import {
 import { SQLiteProvider } from "expo-sqlite";
 import initDatabase from "./src/database/database";
 import TripView from "./src/screens/TripView";
-import CreateDestination from "./src/screens/CreateDestination";
+import CreateDestination from "./src/screens/Destination/CreateDestination";
 import MapPicker from "./src/screens/MapPicker";
+import EditDestination from "./src/screens/Destination/EditDestination";
+import MapViewScreen from "./src/screens/MapViewScreen";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const HomeStack = createNativeStackNavigator();
@@ -42,6 +44,16 @@ function HomeStackNavigator() {
         name="MapPicker"
         component={MapPicker}
         options={{ title: "Pick Location on Map" }}
+      />
+      <HomeStack.Screen
+        name="EditDestination"
+        component={EditDestination}
+        options={{ title: "Edit destination" }}
+      />
+      <HomeStack.Screen
+        name="MapView"
+        component={MapViewScreen}
+        options={{ title: "View Location" }}
       />
     </HomeStack.Navigator>
   );
