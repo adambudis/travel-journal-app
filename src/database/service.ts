@@ -1,6 +1,21 @@
 // src/services/tripService.ts
 import { SQLiteDatabase } from "expo-sqlite";
-import { Trip, Destination } from "../types/types";
+import { Trip, Destination, NewTrip, NewDestination } from "../types/types";
+
+/**
+ * Create a new trip
+ */
+export async function createTrip(
+  db: SQLiteDatabase,
+  trip: NewTrip
+): Promise<number> {
+  const { name, description, date, imageUri } = trip;
+  const result = await db.runAsync(
+    `INSERT INTO trips (name, description, date, imageUri) VALUES (?, ?, ?, ?);`,
+    [name, description, date.toISOString(), imageUri]
+  );
+  return result.lastID as number;
+}
 
 /**
  * Fethc all trips
@@ -31,6 +46,60 @@ export async function deleteTripById(
   tripId: number
 ): Promise<void> {
   await db.runAsync("DELETE FROM trips WHERE id = ?;", [tripId]);
+}
+
+/**
+ * Create a new destination
+ */
+export async function createDestination(
+  db: SQLiteDatabase,
+  tripId: number,
+  destination: NewDestination
+): Promise<number> {
+  const { name, description, date, latitude, longitude, imageUri } =
+    destination;
+  const result = await db.runAsync(
+    `INSERT INTO destinations (trip_id, name, description, date, latitude, longitude, imageUri) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+    [
+      tripId,
+      name,
+      description,
+      date.toISOString(),
+      latitude,
+      longitude,
+      imageUri,
+    ]
+  );
+  return result.lastID as number;
+}
+
+/**
+ * Fetch a single destination
+ */
+export async function getDestinationById(
+  db: SQLiteDatabase,
+  destinationId: number
+): Promise<Destination | null> {
+  const rows = await db.getAllAsync(
+    "SELECT * FROM destinations WHERE id = ?;",
+    [destinationId]
+  );
+  return rows.length ? (rows[0] as Destination) : null;
+}
+
+/**
+ * Update a destination
+ */
+export async function updateDestination(
+  db: SQLiteDatabase,
+  destination: Destination
+): Promise<void> {
+  const { id, name, description, date, latitude, longitude, imageUri } =
+    destination;
+  await db.runAsync(
+    `UPDATE destinations SET name = ?, description = ?, date = ?, latitude = ?, longitude = ?, imageUri = ? WHERE id = ?;`,
+    [name, description, date.toISOString(), latitude, longitude, imageUri, id]
+  );
 }
 
 /**

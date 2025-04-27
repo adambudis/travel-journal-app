@@ -53,8 +53,8 @@ export type Destination = {
   name: string;
   description: string;
   date: Date;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   imageUri: string | null;
 };
 
@@ -65,3 +65,7 @@ export type Trip = {
   date: Date;
   imageUri: string | null;
 };
+
+export type NewTrip = Omit<Trip, "id">;
+
+export type NewDestination = Omit<Destination, "id">;

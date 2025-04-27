@@ -4,26 +4,32 @@ import { TextInput, Button, Card, Divider, Text } from "react-native-paper";
 import DatePicker from "../../components/DatePicker";
 import * as ImagePicker from "expo-image-picker";
 import { useSQLiteContext } from "expo-sqlite";
+import { createTrip } from "../../database/service";
+import { NewTrip, Trip } from "../../types/types";
 
 const CreateTrip = ({ navigation }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
-
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-  const database = useSQLiteContext();
+  const db = useSQLiteContext();
   const handleSave = async () => {
-    await database.runAsync(
-      "INSERT INTO trips (name, description, date, imageUri) VALUES (?, ?, ?, ?);",
-      [name, description, date.toISOString(), imageUri]
-    );
-    alert("Trip created successfully!");
+    const newTrip: NewTrip = {
+      name,
+      description,
+      date,
+      imageUri,
+    };
 
-    setName("");
-    setDescription("");
-    setImageUri(null);
-    navigation.goBack();
+    try {
+      await createTrip(db, newTrip);
+      alert("Trip created successfully!");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error creating trip:", error);
+      alert("Failed to create trip. Please try again.");
+    }
   };
 
   const ensureCameraPermission = async () => {

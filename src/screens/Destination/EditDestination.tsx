@@ -13,52 +13,47 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useFocusEffect } from "@react-navigation/native";
+import { Destination } from "../../types/types";
+import { getDestinationById, updateDestination } from "../../database/service";
 
 const EditDestination = ({ route, navigation }) => {
   const { destinationId } = route.params;
 
-  const database = useSQLiteContext();
+  const db = useSQLiteContext();
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
+  const [destination, setDestination] = useState<Destination>({
+    id: destinationId,
+    name: "",
+    description: "",
+    date: new Date(),
+    latitude: null,
+    longitude: null,
+    imageUri: null,
+  });
 
   const loadDestination = async () => {
-    const result = await database.getAllAsync(
-      "SELECT * FROM destinations WHERE id = ?;",
-      [destinationId]
-    );
-    if (result.length > 0) {
-      const destination = result[0];
-      setName(destination.name);
-      setDescription(destination.description);
-      setDate(new Date(destination.date));
-      setImageUri(destination.imageUri);
-      setLatitude(destination.latitude);
-      setLongitude(destination.longitude);
+    try {
+      const destination: Destination = await getDestinationById(
+        db,
+        destinationId
+      );
+      setDestination(destination);
+    } catch (error) {
+      console.error("Error loading destination:", error);
+      alert("Failed to load destination. Please try again.");
     }
   };
 
-  const handleSave = async () => {
-    await database.runAsync(
-      `UPDATE destinations SET name = ?, description = ?, date = ?, latitude = ?, longitude = ?, imageUri = ? WHERE id = ?`,
-      [
-        name,
-        description,
-        date.toISOString(),
-        latitude,
-        longitude,
-        imageUri,
-        destinationId,
-      ]
-    );
-
-    alert("Destination updated!");
-    navigation.goBack();
+  const handleUpdate = async () => {
+    try {
+      await updateDestination(db, destination);
+      alert("Destination updated!");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error updating destination:", error);
+      alert("Failed to update destination. Please try again.");
+    }
   };
 
   const getLocation = () => {
@@ -73,16 +68,22 @@ const EditDestination = ({ route, navigation }) => {
       return;
     }
     const location = await Location.getCurrentPositionAsync({});
-    setLatitude(location.coords.latitude);
-    setLongitude(location.coords.longitude);
+    setDestination((prev) => ({
+      ...prev,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    }));
   };
 
   const handlePickOnMap = () => {
     setDialogVisible(false);
     navigation.navigate("MapPicker", {
       onLocationSelected: (coords: { latitude: number; longitude: number }) => {
-        setLatitude(coords.latitude);
-        setLongitude(coords.longitude);
+        setDestination((prev) => ({
+          ...prev,
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        }));
       },
     });
   };
@@ -94,15 +95,21 @@ const EditDestination = ({ route, navigation }) => {
     });
 
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      setDestination((prev) => ({
+        ...prev,
+        imageUri: result.assets[0].uri,
+      }));
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       if (route.params?.pickedLatitude && route.params?.pickedLongitude) {
-        setLatitude(route.params.pickedLatitude);
-        setLongitude(route.params.pickedLongitude);
+        setDestination((prev) => ({
+          ...prev,
+          latitude: route.params.pickedLatitude,
+          longitude: route.params.pickedLongitude,
+        }));
 
         navigation.setParams({ pickedLatitude: null, pickedLongitude: null });
       }
@@ -152,7 +159,7 @@ const EditDestination = ({ route, navigation }) => {
           )}
           <Button
             mode="contained"
-            onPress={handleSave}
+            onPress={handleUpdate}
             style={styles.saveButton}
           >
             Save Changes

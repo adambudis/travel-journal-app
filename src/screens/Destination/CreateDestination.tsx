@@ -13,13 +13,14 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useFocusEffect } from "@react-navigation/native";
+import { NewDestination } from "../../types/types";
+import { createDestination } from "../../database/service";
 
 const CreateDestination = ({ route, navigation }) => {
   const { id: tripId } = route.params;
+  const db = useSQLiteContext();
 
-  const database = useSQLiteContext();
   const [dialogVisible, setDialogVisible] = useState(false);
-
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
@@ -28,21 +29,23 @@ const CreateDestination = ({ route, navigation }) => {
   const [longitude, setLongitude] = useState<number | null>(null);
 
   const handleSave = async () => {
-    await database.runAsync(
-      `INSERT INTO destinations (trip_id, name, description, date, latitude, longitude, imageUri) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        tripId,
-        name,
-        description,
-        date.toISOString(),
-        latitude,
-        longitude,
-        imageUri,
-      ]
-    );
+    const newDestination: NewDestination = {
+      name,
+      description,
+      date,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
+      imageUri,
+    };
 
-    alert("Destination created!");
-    navigation.goBack();
+    try {
+      await createDestination(db, tripId, newDestination);
+      alert("Destination created!");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error creating destination:", error);
+      alert("Failed to create destination. Please try again.");
+    }
   };
 
   const getLocation = () => {
