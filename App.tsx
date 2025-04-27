@@ -13,6 +13,8 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
+import { SQLiteProvider } from "expo-sqlite";
+import initDatabase from "./src/database/database";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -29,38 +31,40 @@ const theme = {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: () => {
-                const icons = {
-                  Home: "home",
-                  About: "questioncircleo",
-                  Create: "pluscircleo",
-                };
+      <SQLiteProvider databaseName="travelApp.db" onInit={initDatabase}>
+        <PaperProvider theme={theme}>
+          <NavigationContainer>
+            <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: () => {
+                  const icons = {
+                    Home: "home",
+                    About: "questioncircleo",
+                    Create: "pluscircleo",
+                  };
 
-                const color = "black";
-                const size = 24;
+                  const color = "black";
+                  const size = 24;
 
-                return (
-                  <AntDesign
-                    name={icons[route.name]}
-                    size={size}
-                    color={color}
-                  />
-                );
-              },
-              tabBarActiveTintColor: "tomato",
-              tabBarInactiveTintColor: "gray",
-            })}
-          >
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="About" component={AboutScreen} />
-            <Tab.Screen name="Create" component={TripCreate} />
-          </Tab.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
+                  return (
+                    <AntDesign
+                      name={icons[route.name]}
+                      size={size}
+                      color={color}
+                    />
+                  );
+                },
+                tabBarActiveTintColor: "tomato",
+                tabBarInactiveTintColor: "gray",
+              })}
+            >
+              <Tab.Screen name="Home" component={HomeScreen} />
+              <Tab.Screen name="About" component={AboutScreen} />
+              <Tab.Screen name="Create" component={TripCreate} />
+            </Tab.Navigator>
+          </NavigationContainer>
+        </PaperProvider>
+      </SQLiteProvider>
     </SafeAreaProvider>
   );
 }

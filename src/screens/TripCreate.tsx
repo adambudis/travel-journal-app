@@ -3,11 +3,28 @@ import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { TextInput, Button, Card, Divider, Text } from "react-native-paper";
 import DatePicker from "../components/DatePicker";
 import * as ImagePicker from "expo-image-picker";
+import { useSQLiteContext } from "expo-sqlite";
 
-const TripCreate = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
+const TripCreate = ({ navigation }) => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date());
 
   const [imageUri, setImageUri] = useState<string | null>(null);
+
+  const database = useSQLiteContext();
+  const handleSave = async () => {
+    await database.runAsync(
+      "INSERT INTO trips (name, description, date, imageUri) VALUES (?, ?, ?, ?);",
+      [name, description, date.toISOString(), imageUri]
+    );
+    alert("Trip created successfully!");
+
+    setName("");
+    setDescription("");
+    setImageUri(null);
+    navigation.goBack();
+  };
 
   const ensureCameraPermission = async () => {
     const { status } = await ImagePicker.getCameraPermissionsAsync();
@@ -67,13 +84,21 @@ const TripCreate = () => {
       <Card style={styles.card}>
         <Card.Title title="Create a New Trip" />
         <Card.Content>
-          <TextInput label="Trip Name" mode="outlined" style={styles.input} />
+          <TextInput
+            label="Trip Name"
+            mode="outlined"
+            style={styles.input}
+            value={name}
+            onChangeText={(text) => setName(text)}
+          />
           <TextInput
             label="Trip Description"
             mode="outlined"
             multiline
             numberOfLines={3}
             style={styles.input}
+            value={description}
+            onChangeText={(text) => setDescription(text)}
           />
 
           <Divider style={styles.divider} />
@@ -107,7 +132,11 @@ const TripCreate = () => {
             </Card>
           )}
 
-          <Button mode="contained" style={styles.createButton}>
+          <Button
+            mode="contained"
+            style={styles.createButton}
+            onPress={handleSave}
+          >
             Create Trip
           </Button>
         </Card.Content>
