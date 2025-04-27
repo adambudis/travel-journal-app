@@ -14,7 +14,7 @@ interface Trip {
   imageUri: string | null;
 }
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [data, setData] = useState<Trip[]>([]);
   const [length, setLength] = useState(0);
   const database = useSQLiteContext();
@@ -68,7 +68,11 @@ const HomeScreen = () => {
           </Card.Content>
           <Card.Actions>
             <Button onPress={() => handleDelete(item.id)}>Delete</Button>
-            <Button>View</Button>
+            <Button
+              onPress={() => navigation.navigate("TripView", { id: item.id })}
+            >
+              View
+            </Button>
           </Card.Actions>
         </Card>
       ))}

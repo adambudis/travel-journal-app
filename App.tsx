@@ -1,5 +1,3 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -15,8 +13,39 @@ import {
 } from "react-native-paper";
 import { SQLiteProvider } from "expo-sqlite";
 import initDatabase from "./src/database/database";
+import TripView from "./src/screens/TripView";
+import CreateDestination from "./src/screens/CreateDestination";
+import MapPicker from "./src/screens/MapPicker";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackNavigator() {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="HomeList"
+        component={HomeScreen}
+        options={{ title: "My Trips" }}
+      />
+      <HomeStack.Screen
+        name="TripView"
+        component={TripView}
+        options={{ title: "Trip Details" }}
+      />
+      <HomeStack.Screen
+        name="CreateDestination"
+        component={CreateDestination}
+        options={{ title: "Add Destination" }}
+      />
+      <HomeStack.Screen
+        name="MapPicker"
+        component={MapPicker}
+        options={{ title: "Pick Location on Map" }}
+      />
+    </HomeStack.Navigator>
+  );
+}
 
 // https://callstack.github.io/react-native-paper/docs/guides/theming
 const theme = {
@@ -58,7 +87,11 @@ export default function App() {
                 tabBarInactiveTintColor: "gray",
               })}
             >
-              <Tab.Screen name="Home" component={HomeScreen} />
+              <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                options={{ headerShown: false }}
+              />
               <Tab.Screen name="About" component={AboutScreen} />
               <Tab.Screen name="Create" component={TripCreate} />
             </Tab.Navigator>
