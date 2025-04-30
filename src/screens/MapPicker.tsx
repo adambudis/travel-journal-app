@@ -41,15 +41,6 @@ const MapPicker = () => {
     return unsub;
   }, [navigation, selectedLocation, onLocationSelected]);
 
-  const handleSave = () => {
-    if (!selectedLocation) {
-      alert("Please select a location first.");
-      return;
-    }
-    onLocationSelected(selectedLocation);
-    navigation.goBack();
-  };
-
   return (
     <View style={styles.container}>
       <MapView
@@ -64,9 +55,6 @@ const MapPicker = () => {
       >
         {selectedLocation && <Marker coordinate={selectedLocation} />}
       </MapView>
-      <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
-        Save Location
-      </Button>
     </View>
   );
 };

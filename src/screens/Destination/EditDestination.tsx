@@ -38,7 +38,10 @@ const EditDestination = ({ route, navigation }) => {
         db,
         destinationId
       );
-      setDestination(destination);
+      setDestination({
+        ...destination,
+        date: new Date(destination.date),
+      });
     } catch (error) {
       console.error("Error loading destination:", error);
       alert("Failed to load destination. Please try again.");
@@ -128,34 +131,42 @@ const EditDestination = ({ route, navigation }) => {
           <TextInput
             label="Destination Name"
             mode="outlined"
-            value={name}
-            onChangeText={setName}
+            value={destination.name}
+            onChangeText={(name) =>
+              setDestination((prev) => ({ ...prev, name }))
+            }
             style={styles.input}
           />
           <TextInput
             label="Description"
             mode="outlined"
-            value={description}
+            value={destination.description}
             multiline
             numberOfLines={3}
-            onChangeText={setDescription}
+            onChangeText={(description) =>
+              setDestination((prev) => ({ ...prev, description }))
+            }
             style={styles.input}
           />
           <Divider style={styles.divider} />
           <Button mode="outlined" onPress={getLocation}>
             Update Location
           </Button>
-          {latitude && longitude && (
+          {destination.latitude && destination.longitude && (
             <Text style={styles.locationText}>
-              Location: {latitude.toFixed(5)}, {longitude.toFixed(5)}
+              Location: {destination.latitude.toFixed(5)},{" "}
+              {destination.longitude.toFixed(5)}
             </Text>
           )}
           <Divider style={styles.divider} />
           <Button mode="outlined" onPress={pickImageFromGallery}>
             Update Image
           </Button>
-          {imageUri && (
-            <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          {destination.imageUri && (
+            <Image
+              source={{ uri: destination.imageUri }}
+              style={styles.imagePreview}
+            />
           )}
           <Button
             mode="contained"

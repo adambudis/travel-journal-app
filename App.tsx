@@ -90,25 +90,22 @@ export default function App() {
           <NavigationContainer>
             <Tab.Navigator
               screenOptions={({ route }) => ({
-                tabBarIcon: () => {
+                tabBarIcon: ({ color, size }) => {
                   const icons = {
                     Home: "home",
-                    About: "questioncircleo",
-                    Create: "pluscircleo",
+                    About: "help-circle-outline",
+                    Create: "plus-circle-outline",
                   };
 
-                  const color = "black";
-                  const size = 24;
-
                   return (
-                    <AntDesign
-                      name={icons[route.name]}
+                    <IconButton
+                      icon={icons[route.name]}
+                      iconColor={color}
                       size={size}
-                      color={color}
                     />
                   );
                 },
-                tabBarActiveTintColor: "tomato",
+                tabBarActiveTintColor: "purple",
                 tabBarInactiveTintColor: "gray",
               })}
             >
@@ -117,7 +114,6 @@ export default function App() {
                 component={HomeStackNavigator}
                 options={{ headerShown: false }}
               />
-              <Tab.Screen name="About" component={AboutScreen} />
               <Tab.Screen name="Create" component={CreateTrip} />
             </Tab.Navigator>
           </NavigationContainer>
